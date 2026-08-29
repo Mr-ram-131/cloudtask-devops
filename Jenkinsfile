@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     stages {
@@ -22,7 +21,14 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo 'Building CloudTask Docker image...'
-                bat 'docker build -t cloudtask:%BUILD_NUMBER% .'
+                bat 'docker build -t cloudtask:2 .'
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Scanning Docker image for vulnerabilities...'
+                bat 'trivy image --severity HIGH,CRITICAL --exit-code 1 cloudtask:2'
             }
         }
 
