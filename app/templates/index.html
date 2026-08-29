@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudTask — Employee & Task Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 18a4 4 0 0 1-.6-7.96A5 5 0 0 1 16 8a3.5 3.5 0 0 1 .5 6.98" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.5 13.3l2 2 4-4.3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            CloudTask
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('auth.login') }}">Log in</a>
+            <a href="{{ url_for('auth.register') }}" class="btn primary">Create account</a>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-eyebrow"><i></i>Built for small, fast-moving teams</span>
+            <h1>Every task,<br>every teammate,<br><span>one clear picture.</span></h1>
+            <p>
+                CloudTask keeps employee records and task assignments in one place,
+                so nothing gets tracked in a spreadsheet no one opens twice.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('auth.register') }}" class="btn primary">Create account</a>
+                <a href="{{ url_for('auth.login') }}" class="btn secondary">Log in</a>
+            </div>
+            <div class="hero-strip-label">Live task mix across a typical team</div>
+            <div class="status-strip">
+                <span class="pending on"></span>
+                <span class="progress on"></span>
+                <span class="progress on"></span>
+                <span class="done on"></span>
+                <span class="done on"></span>
+                <span class="done on"></span>
+            </div>
+        </div>
+
+        <div class="board-mock">
+            <div>
+                <div class="board-col-head pending"><i></i>Pending</div>
+                <div class="board-chip">Draft onboarding checklist<span class="tag">R. Iyer</span></div>
+                <div class="board-chip">Renew SSL certificate<span class="tag">A. Fernandes</span></div>
+            </div>
+            <div>
+                <div class="board-col-head progress"><i></i>In progress</div>
+                <div class="board-chip">Weekly deployment review<span class="tag">S. Nair</span></div>
+                <div class="board-chip">Client dashboard revamp<span class="tag">P. Rao</span></div>
+            </div>
+            <div>
+                <div class="board-col-head done"><i></i>Completed</div>
+                <div class="board-chip">Q3 attendance report<span class="tag">M. Das</span></div>
+                <div class="board-chip">Server migration<span class="tag">S. Nair</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-section">
+        <div class="feature-kicker">What's inside</div>
+        <h2>Three screens cover the whole workflow — no setup, no extra tools.</h2>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span class="feature-number">Employees</span>
+                <h3>One record per person</h3>
+                <p>Add each employee once — name, department, role, and joining date — and reuse it everywhere a task needs an owner.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-number">Tasks</span>
+                <h3>Assign, prioritize, track</h3>
+                <p>Create a task, hand it to someone, set a priority and a due date. Status moves from Pending to Completed as work happens.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-number">Dashboard</span>
+                <h3>See where things stand</h3>
+                <p>A single screen totals employees and tasks by status, so a manager can spot what's stuck without opening every record.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        CloudTask — a lightweight employee & task management platform.
+    </footer>
+
+</body>
+</html>

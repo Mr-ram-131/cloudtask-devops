@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Task - CloudTask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 18a4 4 0 0 1-.6-7.96A5 5 0 0 1 16 8a3.5 3.5 0 0 1 .5 6.98" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.5 13.3l2 2 4-4.3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            CloudTask
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('tasks.task_list') }}">Tasks</a>
+            <a href="{{ url_for('auth.logout') }}">Log out</a>
+        </div>
+    </nav>
+
+    <div class="form-page">
+        <a href="{{ url_for('tasks.task_list') }}" class="back-link">← Back to tasks</a>
+
+        <div class="form-shell">
+            <div class="auth-box">
+                <span class="eyebrow">New task</span>
+                <h1>Create task</h1>
+                <p>Assign work to a teammate and set its priority.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="field">
+                        <label for="title">Task title</label>
+                        <input type="text" id="title" name="title" placeholder="Task title" required>
+                    </div>
+                    <div class="field">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" placeholder="Task description" rows="4"></textarea>
+                    </div>
+                    <div class="field">
+                        <label for="employee_id">Assign to</label>
+                        <select id="employee_id" name="employee_id" required>
+                            <option value="">Select employee</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.name }} — {{ employee.department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="priority">Priority</label>
+                        <select id="priority" name="priority" required>
+                            <option value="" disabled selected>Select priority</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="status">Status</label>
+                        <select id="status" name="status" required>
+                            <option value="" disabled selected>Select status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="due_date">Due date</label>
+                        <input type="date" id="due_date" name="due_date">
+                    </div>
+                    <button type="submit">Create task</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

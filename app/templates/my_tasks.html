@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks - CloudTask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 18a4 4 0 0 1-.6-7.96A5 5 0 0 1 16 8a3.5 3.5 0 0 1 .5 6.98" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.5 13.3l2 2 4-4.3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            CloudTask
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('tasks.my_tasks') }}">My Tasks</a>
+            <a href="{{ url_for('auth.logout') }}">Log out</a>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <div class="page-header">
+            <div>
+                <h1>My Tasks</h1>
+                <p>Tasks assigned to {{ employee.name }}</p>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Task</th>
+                        <th>Description</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Due date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td class="cell-id">#{{ task.id }}</td>
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.description or "No description" }}</td>
+                        <td>
+                            {% if task.priority == "High" %}
+                                <span class="badge badge-priority-high">{{ task.priority }}</span>
+                            {% elif task.priority == "Medium" %}
+                                <span class="badge badge-priority-medium">{{ task.priority }}</span>
+                            {% else %}
+                                <span class="badge badge-priority-low">{{ task.priority }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if task.status == "Completed" %}
+                                <span class="badge badge-done">{{ task.status }}</span>
+                            {% elif task.status == "In Progress" %}
+                                <span class="badge badge-progress">{{ task.status }}</span>
+                            {% else %}
+                                <span class="badge badge-pending">{{ task.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ task.due_date or "No deadline" }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="empty-message">No tasks have been assigned to you yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

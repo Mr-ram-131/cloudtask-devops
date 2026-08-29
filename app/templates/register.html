@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - CloudTask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="auth-container">
+        <aside class="auth-aside">
+            <div class="auth-aside-brand">
+                <span class="logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 18a4 4 0 0 1-.6-7.96A5 5 0 0 1 16 8a3.5 3.5 0 0 1 .5 6.98" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8.5 13.3l2 2 4-4.3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                CloudTask
+            </div>
+            <div class="auth-aside-quote">
+                <h2>Set up your workspace in under a minute.</h2>
+                <p>Create an account, add your team, and start assigning tasks — no configuration required.</p>
+                <div class="status-strip">
+                    <span class="on"></span><span class="on"></span>
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="auth-aside-legend">
+                    <span><i style="background:#FBBF6B"></i>Pending</span>
+                    <span><i style="background:#93B8FB"></i>In progress</span>
+                    <span><i style="background:#7CE0BC"></i>Completed</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="auth-form-side">
+            <div class="auth-box">
+                <span class="eyebrow">Get started</span>
+                <h1>Create your account</h1>
+                <p>Join CloudTask to manage employees and tasks.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Your username" required>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="you@company.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="field">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" name="department" placeholder="e.g. Engineering" required>
+                    </div>
+                    <div class="field">
+                        <label for="job_role">Job role</label>
+                        <input type="text" id="job_role" name="job_role" placeholder="e.g. Backend Developer" required>
+                    </div>
+                    <button type="submit">Create account</button>
+                </form>
+
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

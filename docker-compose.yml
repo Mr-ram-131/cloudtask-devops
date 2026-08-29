@@ -1,0 +1,41 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: cloudtask-db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: cloudtask
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    ports:
+      - "3307:3306"
+
+
+  app:
+    build: .
+    image: cloudtask:v1
+    container_name: cloudtask-app
+    restart: unless-stopped
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: cloudtask
+
+    depends_on:
+      - mysql
+
+
+volumes:
+  mysql_data:
