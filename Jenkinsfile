@@ -63,10 +63,15 @@ pipeline {
                     bat '''
                         echo Logging into Docker Hub...
 
-                        docker login -u "%DOCKER_USERNAME%" --password-stdin <<< "%DOCKER_PASSWORD%"
-                    '''
+                        echo %DOCKER_PASSWORD% | docker login -u "%DOCKER_USERNAME%" --password-stdin
 
-                    bat '''
+                        if errorlevel 1 (
+                            echo Docker Hub login failed!
+                            exit /b 1
+                        )
+
+                        echo Docker Hub login successful!
+
                         docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
 
                         if errorlevel 1 (
@@ -82,6 +87,8 @@ pipeline {
                             echo Docker latest image push failed!
                             exit /b 1
                         )
+
+                        echo Docker images pushed successfully!
                     '''
                 }
             }
