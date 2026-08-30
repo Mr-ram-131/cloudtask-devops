@@ -20,6 +20,7 @@ pipeline {
 
                 bat 'python --version'
                 bat 'docker --version'
+                bat 'trivy --version'
             }
         }
 
@@ -59,35 +60,44 @@ pipeline {
                     )
                 ]) {
 
-                     bat '''
-                docker logout
+                    bat '''
+                        echo Logging into Docker Hub...
 
-                echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                        docker logout
 
-                if %ERRORLEVEL% NEQ 0 (
-                    echo Docker Hub login failed!
-                    exit /b 1
-                )
+                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
 
-                docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+                        if errorlevel 1 (
+                            echo Docker Hub login failed!
+                            exit /b 1
+                        )
 
-                if %ERRORLEVEL% NEQ 0 (
-                    echo Docker image push failed!
-                    exit /b 1
-                )
+                        echo Docker Hub login successful!
 
-                docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
+                        echo Pushing versioned image...
+                        docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
 
-                docker push %DOCKER_IMAGE%:latest
+                        if errorlevel 1 (
+                            echo Docker image push failed!
+                            exit /b 1
+                        )
 
-                if %ERRORLEVEL% NEQ 0 (
-                    echo Docker latest image push failed!
-                    exit /b 1
-                )
-            '''
+                        echo Tagging image as latest...
+                        docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
+
+                        echo Pushing latest image...
+                        docker push %DOCKER_IMAGE%:latest
+
+                        if errorlevel 1 (
+                            echo Docker latest image push failed!
+                            exit /b 1
+                        )
+
+                        echo Docker images pushed successfully!
+                    '''
+                }
+            }
         }
-    }
-}
     }
 
     post {
@@ -97,6 +107,10 @@ pipeline {
 
         failure {
             echo 'CloudTask CI/CD pipeline failed.'
+        }
+
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }
