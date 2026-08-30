@@ -63,18 +63,10 @@ pipeline {
                     bat '''
                         echo Logging into Docker Hub...
 
-                        docker logout
+                        docker login -u "%DOCKER_USERNAME%" --password-stdin <<< "%DOCKER_PASSWORD%"
+                    '''
 
-                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-
-                        if errorlevel 1 (
-                            echo Docker Hub login failed!
-                            exit /b 1
-                        )
-
-                        echo Docker Hub login successful!
-
-                        echo Pushing versioned image...
+                    bat '''
                         docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
 
                         if errorlevel 1 (
@@ -82,18 +74,14 @@ pipeline {
                             exit /b 1
                         )
 
-                        echo Tagging image as latest...
                         docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
 
-                        echo Pushing latest image...
                         docker push %DOCKER_IMAGE%:latest
 
                         if errorlevel 1 (
                             echo Docker latest image push failed!
                             exit /b 1
                         )
-
-                        echo Docker images pushed successfully!
                     '''
                 }
             }
@@ -107,10 +95,6 @@ pipeline {
 
         failure {
             echo 'CloudTask CI/CD pipeline failed.'
-        }
-
-        always {
-            echo 'Pipeline execution completed.'
         }
     }
 }
