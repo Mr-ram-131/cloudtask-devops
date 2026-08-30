@@ -59,18 +59,35 @@ pipeline {
                     )
                 ]) {
 
-                    bat '''
-                        echo %DOCKER_PASSWORD% | docker login docker.io -u %DOCKER_USERNAME% --password-stdin
+                     bat '''
+                docker logout
 
-                        docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+                echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
 
-                        docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
+                if %ERRORLEVEL% NEQ 0 (
+                    echo Docker Hub login failed!
+                    exit /b 1
+                )
 
-                        docker push %DOCKER_IMAGE%:latest
-                    '''
-                }
-            }
+                docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+
+                if %ERRORLEVEL% NEQ 0 (
+                    echo Docker image push failed!
+                    exit /b 1
+                )
+
+                docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
+
+                docker push %DOCKER_IMAGE%:latest
+
+                if %ERRORLEVEL% NEQ 0 (
+                    echo Docker latest image push failed!
+                    exit /b 1
+                )
+            '''
         }
+    }
+}
     }
 
     post {
