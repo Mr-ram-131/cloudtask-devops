@@ -60,9 +60,12 @@ pipeline {
                 ]) {
 
                     bat '''
-                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                        echo %DOCKER_PASSWORD% | docker login docker.io -u %DOCKER_USERNAME% --password-stdin
+
                         docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+
                         docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
+
                         docker push %DOCKER_IMAGE%:latest
                     '''
                 }
