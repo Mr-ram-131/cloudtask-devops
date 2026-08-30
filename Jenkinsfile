@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = '756043/cloudtask'
+        DOCKER_IMAGE = "756043/cloudtask"
     }
 
     stages {
@@ -16,10 +16,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Checking required tools...'
+                echo 'Running application tests...'
+
                 bat 'python --version'
                 bat 'docker --version'
-                bat 'trivy --version'
             }
         }
 
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 echo 'Building CloudTask Docker image...'
 
-                bat 'docker build --no-cache -t %DOCKER_IMAGE%:%BUILD_NUMBER% .'
+                bat "docker build -t %DOCKER_IMAGE%:%BUILD_NUMBER% ."
             }
         }
 
@@ -35,31 +35,7 @@ pipeline {
             steps {
                 echo 'Scanning Docker image for HIGH and CRITICAL vulnerabilities...'
 
-                bat 'trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --scanners vuln %DOCKER_IMAGE%:%BUILD_NUMBER%'
-            }
-        }
-
-        stage('Docker Login') {
-            steps {
-                echo 'Logging in to Docker Hub...'
-
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )
-                ]) {
-                    bat 'echo %DOCKER_PASS%| docker login -u %DOCKER_USER% --password-stdin'
-                }
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
-                echo 'Pushing CloudTask image to Docker Hub...'
-
-                bat 'docker push %DOCKER_IMAGE%:%BUILD_NUMBER%'
+                bat "trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 %DOCKER_IMAGE%:%BUILD_NUMBER%"
             }
         }
 
@@ -67,7 +43,29 @@ pipeline {
             steps {
                 echo 'Checking Docker image...'
 
-                bat 'docker images %DOCKER_IMAGE%'
+                bat "docker images %DOCKER_IMAGE%"
+            }
+        }
+
+        stage('Docker Hub Push') {
+            steps {
+                echo 'Pushing CloudTask image to Docker Hub...'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker hub- creds',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+
+                    bat '''
+                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                        docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+                        docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
+                        docker push %DOCKER_IMAGE%:latest
+                    '''
+                }
             }
         }
     }
@@ -75,15 +73,10 @@ pipeline {
     post {
         success {
             echo 'CloudTask CI/CD pipeline completed successfully!'
-            echo 'Docker image pushed successfully to Docker Hub.'
         }
 
         failure {
             echo 'CloudTask CI/CD pipeline failed.'
-        }
-
-        always {
-            bat 'docker logout'
         }
     }
 }
