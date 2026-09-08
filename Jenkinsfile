@@ -60,35 +60,32 @@ pipeline {
                     )
                 ]) {
 
-                    bat '''
-                        echo Logging into Docker Hub...
+                    powershell '''
+                        Write-Host "Logging into Docker Hub..."
 
-                        echo %DOCKER_PASSWORD% | docker login -u "%DOCKER_USERNAME%" --password-stdin
+                        $Env:DOCKER_PASSWORD | docker login -u $Env:DOCKER_USERNAME --password-stdin
+                        if ($LASTEXITCODE -ne 0) {
+                            Write-Host "Docker Hub login failed!"
+                            exit 1
+                        }
 
-                        if errorlevel 1 (
-                            echo Docker Hub login failed!
-                            exit /b 1
-                        )
+                        Write-Host "Docker Hub login successful!"
 
-                        echo Docker Hub login successful!
+                        docker push "$Env:DOCKER_IMAGE`:$Env:BUILD_NUMBER"
+                        if ($LASTEXITCODE -ne 0) {
+                            Write-Host "Docker image push failed!"
+                            exit 1
+                        }
 
-                        docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+                        docker tag "$Env:DOCKER_IMAGE`:$Env:BUILD_NUMBER" "$Env:DOCKER_IMAGE`:latest"
 
-                        if errorlevel 1 (
-                            echo Docker image push failed!
-                            exit /b 1
-                        )
+                        docker push "$Env:DOCKER_IMAGE`:latest"
+                        if ($LASTEXITCODE -ne 0) {
+                            Write-Host "Docker latest image push failed!"
+                            exit 1
+                        }
 
-                        docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest
-
-                        docker push %DOCKER_IMAGE%:latest
-
-                        if errorlevel 1 (
-                            echo Docker latest image push failed!
-                            exit /b 1
-                        )
-
-                        echo Docker images pushed successfully!
+                        Write-Host "Docker images pushed successfully!"
                     '''
                 }
             }
